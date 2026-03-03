@@ -187,13 +187,15 @@ def train_vision_encoder(
     try:
         from datasets import load_dataset
         
-        dataset_name = data_config.get('small_vision_dataset', 'cifar100')
+        dataset_name = data_config.get('small_vision_dataset', 'uoft-cs/cifar100')
+        if dataset_name == 'cifar100':
+            dataset_name = 'uoft-cs/cifar100'  # Explicit HF path
         print(f"Loading dataset: {dataset_name}")
         
         dataset = load_dataset(
             dataset_name,
             split="train",
-            cache_dir=data_config['cache_dir'],
+            cache_dir=data_config.get('cache_dir', './data/huggingface_cache'),
         )
     except Exception as e:
         print(f"Failed to load dataset: {e}")
@@ -684,7 +686,7 @@ def train_fusion_and_temporal(
                 def __init__(self, split, n_frames=8, sz=224, audio_len=16000, cache_dir='./data/huggingface_cache'):
                     from datasets import load_dataset
                     self.n_frames, self.sz, self.audio_len = n_frames, sz, audio_len
-                    self.img_ds = load_dataset('cifar100', split=split, cache_dir=cache_dir)
+                    self.img_ds = load_dataset('uoft-cs/cifar100', split=split, cache_dir=cache_dir)
                     try:
                         import torchaudio
                         self.audio_ds = torchaudio.datasets.SPEECHCOMMANDS(

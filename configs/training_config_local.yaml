@@ -129,9 +129,9 @@ training:
     num_workers: 4
     pin_memory: true
 
-# Data - use small datasets (CIFAR, SpeechCommands) for RTX 3050
+# Data - use small datasets for RTX 3050
 data:
-  small_vision_dataset: "cifar100"
+  small_vision_dataset: "uoft-cs/cifar100"
   small_audio_dataset: "speech_commands"
   cache_dir: "./data/huggingface_cache"
   checkpoint_dir: "./checkpoints"

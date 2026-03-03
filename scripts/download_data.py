@@ -20,6 +20,11 @@ Usage:
     # Local testing only (tiny CIFAR subset)
     python scripts/download_data.py --local-test
     
+Data sources:
+- CIFAR-100: https://huggingface.co/datasets/uoft-cs/cifar100
+- Speech Commands: http://download.tensorflow.org/data/speech_commands_v0.02.tar.gz (via torchaudio)
+- Greatest Hits: https://web.eecs.umich.edu/~ahowens/vis/vis-data.zip (manual download, 40 GB)
+
 Note: Pre-validation tests (noisy_tv, forgetting, balloon, slot_discovery)
       use SYNTHETIC data and don't require any downloads!
 """
@@ -221,8 +226,9 @@ def download_cifar_for_testing(cache_dir: Optional[Path] = None):
         cache_dir = get_cache_dir()
     
     try:
+        # Use uoft-cs/cifar100 (HuggingFace); "cifar100" may be deprecated
         dataset = load_dataset(
-            "cifar100",
+            "uoft-cs/cifar100",
             split="train",
             cache_dir=str(cache_dir),
         )

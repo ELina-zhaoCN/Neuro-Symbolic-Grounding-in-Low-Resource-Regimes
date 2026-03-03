@@ -78,11 +78,26 @@ python scripts/train_world_model.py --config configs/training_config_local.yaml 
 | Phase   | Data Source                | When Downloaded                    |
 |---------|----------------------------|------------------------------------|
 | Vision  | CIFAR-100                  | First vision training run          |
-| Audio   | SpeechCommands (torchaudio)| First audio training run           |
-| Fusion  | CIFAR + SpeechCommands     | First fusion run (fallback)        |
-| Fusion* | Greatest Hits              | Only if you use `--data-dir /path/to/greatest-hits` |
+| Audio   | Speech Commands v0.02      | First audio training run (via torchaudio) |
+| Fusion  | CIFAR + Speech Commands    | First fusion run (fallback)        |
+| Fusion* | Greatest Hits (Visually Indicated Sounds) | Only if you use `--data-dir /path/to/vis-data` |
 
-\* Greatest Hits is an aligned video+audio dataset. Without it, the fallback uses CIFAR images as “video” paired with SpeechCommands. Results are better with real Greatest Hits.
+\* Greatest Hits is an aligned video+audio dataset. Without it, the fallback uses CIFAR images as “video” paired with Speech Commands. Results are better with real Greatest Hits.
+
+### Data source links
+
+| Dataset | Source | Link |
+|---------|--------|------|
+| **CIFAR-100** | HuggingFace | [uoft-cs/cifar100](https://huggingface.co/datasets/uoft-cs/cifar100) |
+| **Speech Commands v0.02** | Google (via torchaudio) | [TensorFlow data](http://download.tensorflow.org/data/speech_commands_v0.02.tar.gz) — torchaudio downloads this automatically |
+| **Greatest Hits** | Owens et al. (UMich) | [vis-data.zip](https://web.eecs.umich.edu/~ahowens/vis/vis-data.zip) (40 GB) — extract, then point `--data-dir` to the folder. Expected files: `*_denoised.mp4`, `*_denoised.wav` (rename if your extract uses different names) |
+
+### Manual download: Greatest Hits
+
+1. Download [vis-data.zip](https://web.eecs.umich.edu/~ahowens/vis/vis-data.zip) (40 GB).
+2. Extract to a folder (e.g. `./data/vis-data`).
+3. Ensure the folder contains `*_denoised.mp4` and `*_denoised.wav` pairs.
+4. Run training with: `python train.py --data-dir ./data/vis-data`
 
 ### Pre-download data (optional)
 
@@ -90,7 +105,7 @@ python scripts/train_world_model.py --config configs/training_config_local.yaml 
 python scripts/download_data.py --local-test
 ```
 
-Downloads CIFAR-100 + SpeechCommands so training doesn’t wait on downloads. Training will also download them if needed.
+Downloads CIFAR-100 + Speech Commands so training doesn’t wait on downloads. Training will also download them if needed.
 
 ---
 
@@ -156,7 +171,7 @@ python scripts/train_world_model.py --config configs/training_config_local.yaml 
 |---------|----------|
 | **Out of memory (OOM)** | Use `configs/training_config_local.yaml`. Reduce `batch_size` further in the config if needed. |
 | **SpeechCommands download fails** | Ensure `torchaudio` is installed: `pip install torchaudio` |
-| **CIFAR download fails** | Run `pip install datasets` and try again. |
+| **CIFAR download fails** | Uses `uoft-cs/cifar100`. Run `pip install datasets` and try again. |
 | **`verify_world_model.py` fails** | Ensure all dependencies are installed. Check for CUDA/GPU compatibility if using GPU. |
 | **Fusion phase: “Greatest Hits failed”** | Expected if you don’t have Greatest Hits. The CIFAR+SpeechCommands fallback will be used automatically. |
 
