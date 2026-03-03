@@ -291,10 +291,10 @@ If you use this work, please cite:
 
 ```bibtex
 @software{nsca2026,
-  author = {NSCA Contributors},
+  author = {Mahmoud Omar},
   title = {NSCA: Neuro-Symbolic Cognitive Architecture},
   year = {2026},
-  url = {https://github.com/your-username/NSCA}
+  url = {https://github.com/mahmoudomar/NSCA}
 }
 ```
 
