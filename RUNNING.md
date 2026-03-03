@@ -40,15 +40,41 @@ You should see `✓` for each component. If any fail, check that PyTorch and tor
 
 ## 3. Training
 
-### Option A: RTX 3050 / 6 GB GPU (recommended)
+### Option A: Full 5-Layer Training (RTX 3050)
 
-Uses `configs/training_config_local.yaml` with smaller batch sizes.
+Trains **all layers** of NSCA:
+
+- **Layer 0**: World Model (vision, audio, fusion, temporal)
+- **Layer 1**: Property extractors (hardness, weight, etc.)
+- **Layer 2**: Causal / physics priors
+- **Layer 3**: Drive system (curiosity, competence)
+- **Layer 4**: Language grounding (via babbling)
+
+```bash
+python scripts/run_full_training.py --config configs/training_config_local.yaml --skip-validation
+```
+
+This runs: Layer 0 training → Babbling → Layers 1-4 training.
+
+### Option B: Layer 0 only (World Model)
 
 ```bash
 python train.py
 ```
 
-This runs the full pipeline: **Vision → Audio → Fusion → Temporal** in one process. Datasets (CIFAR-100, SpeechCommands) are downloaded automatically on first run.
+Runs **Vision → Audio → Fusion → Temporal** in one process. Datasets (CIFAR-100, SpeechCommands) download automatically.
+
+### Option C: Layers 1-4 (after Layer 0 is trained)
+
+```bash
+python scripts/train_all_layers.py --world-model checkpoints/world_model_final.pth --data-dir /path/to/GreatestHits
+```
+
+### Option D: Babbling only (Layer 4 language grounding)
+
+```bash
+python scripts/run_babbling.py --random-steps 10000 --competence-steps 40000
+```
 
 ### Option B: Cloud GPU (A100, etc.)
 
@@ -115,9 +141,10 @@ Downloads CIFAR-100 + Speech Commands so training doesn’t wait on downloads. T
   - `vision_encoder_epoch{N}.pth` — Vision phase
   - `audio_encoder_epoch{N}.pth` — Audio phase
   - `fusion_best.pth` — Best fusion model
-  - `world_model_final.pth` — Final full model
+  - `world_model_final.pth` — Layer 0 (world model)
+  - `cognitive_agent_full.pth` — Full 5-layer agent (after `train_all_layers.py`)
 
-- **Logs**: `logs/`
+- **Logs**: `logs/` (including `babbling_results.json`)
 
 ---
 
@@ -180,8 +207,11 @@ python scripts/train_world_model.py --config configs/training_config_local.yaml 
 ## Summary
 
 ```bash
-# Minimal run on RTX 3050
+# Full 5-layer training (skip validation for faster start)
+python scripts/run_full_training.py --config configs/training_config_local.yaml --skip-validation
+
+# Or Layer 0 only
 python train.py
 ```
 
-That’s it. Datasets download automatically, and training runs all phases sequentially.
+That’s it. Datasets download automatically. Full pipeline trains Layer 0 then Layers 1-4.

@@ -270,8 +270,7 @@ def main():
         phase_1_babbling(args.config, args.babbling_steps)
         phase_times['babbling'] = time.time() - t0
     
-    # Phases 2-5: Run train_world_model with --phase all so model state is preserved
-    # (vision -> audio -> fusion/temporal in one process)
+    # Phases 2-5: Layer 0 (World Model) - vision, audio, fusion, temporal
     if args.start_phase <= 5:
         t0 = time.time()
         cmd = ["python", "scripts/train_world_model.py", "--config", args.config, "--phase", "all"]
@@ -279,8 +278,18 @@ def main():
             cmd.extend(["--data-dir", args.data_dir])
         if args.resume:
             cmd.extend(["--resume", args.resume])
-        run_command(cmd, "Vision + Audio + Fusion + Temporal Training")
-        phase_times['training'] = time.time() - t0
+        run_command(cmd, "Layer 0: Vision + Audio + Fusion + Temporal")
+        phase_times['layer0'] = time.time() - t0
+    
+    # Phase 5b: Layers 1-4 (Properties, Causal, Drives, Language)
+    if args.start_phase <= 5:
+        t0 = time.time()
+        cmd = ["python", "scripts/train_all_layers.py", "--world-model",
+               "checkpoints/world_model_final.pth", "--config", args.config]
+        if args.data_dir:
+            cmd.extend(["--data-dir", args.data_dir])
+        run_command(cmd, "Layers 1-4: Properties + Causal + Drives", required=False)
+        phase_times['layers1_4'] = time.time() - t0
     
     # Phase 6: Evaluation
     if args.start_phase <= 6:
