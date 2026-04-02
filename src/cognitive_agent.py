@@ -57,8 +57,8 @@ class CognitiveConfig:
     # Layer 1: Semantic Properties
     property_layer: PropertyConfig = field(default_factory=lambda: PropertyConfig(
         world_state_dim=256,
-        audio_dim=256,
-        proprio_dim=256,
+        audio_dim=512,
+        proprio_dim=512,
         hidden_dim=512,
     ))
     affordance: AffordanceConfig = field(default_factory=AffordanceConfig)
@@ -511,8 +511,8 @@ def create_cognitive_agent(
     
     # Layer 1: Property layer needs to match world model dimensions
     config.property_layer.world_state_dim = state_dim
-    config.property_layer.audio_dim = latent_dim  # Audio encoder outputs latent_dim
-    config.property_layer.proprio_dim = latent_dim  # Proprio encoder outputs latent_dim
+    config.property_layer.audio_dim = config.world_model.audio.output_dim    # 512
+    config.property_layer.proprio_dim = config.world_model.proprio.output_dim # 512
     
     # Layer 2: Causal reasoning
     config.causal.state_dim = state_dim
