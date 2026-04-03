@@ -99,7 +99,7 @@ training:
     learning_rate: 0.0001
     weight_decay: 0.01
     warmup_epochs: 5
-    max_audio_length: 80000  # 5 seconds at 16kHz
+    max_audio_length: 16000  # 1 second at 16kHz (matches SpeechCommands)
     augmentation:
       time_stretch: [0.8, 1.2]
       pitch_shift: [-2, 2]
@@ -132,7 +132,7 @@ training:
     save_every_n_epochs: 10
     eval_every_n_epochs: 5
     log_every_n_steps: 100
-    num_workers: 8
+    num_workers: 0  # HuggingFace datasets不支持多进程fork，必须为0
     pin_memory: true
 
 # Data configuration
@@ -188,7 +188,7 @@ scheduler:
 
 # Logging
 logging:
-  use_wandb: true
+  use_wandb: false  # 禁用wandb，避免需要API Key
   wandb_project: "nsca-world-model"
   wandb_entity: null  # Your wandb username
   log_images: true
