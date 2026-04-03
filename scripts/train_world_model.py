@@ -716,8 +716,8 @@ def train_fusion_and_temporal(
                     img = F.interpolate(img.unsqueeze(0), size=(self.sz, self.sz),
                                        mode='bilinear', align_corners=False).squeeze(0)
                     video = img.unsqueeze(0).expand(self.n_frames, -1, -1, -1)
-                    mean = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1)
-                    std = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1)
+                    mean = torch.tensor([0.485, 0.456, 0.406]).view(1, 1, 1, 3)
+                    std = torch.tensor([0.229, 0.224, 0.225]).view(1, 1, 1, 3)
                     video = ((video.permute(0, 2, 3, 1).unsqueeze(0) - mean) / std).squeeze(0).permute(0, 3, 1, 2)
                     
                     if self._use_ta:
